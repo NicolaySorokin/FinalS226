@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro; 
 
 public class Control : Sounds
 {
@@ -13,13 +14,16 @@ public class Control : Sounds
     private SpriteRenderer spriteRenderer;
     private Animator animator;
     private UnityEngine.Object explosion;
-    public float footstepInterval = 0.1f; 
+    public float footstepInterval = 0.1f;
     private float footstepTimer;
     public float health;
     public int numOfHearts;
     public Image[] hearts;
     public Sprite fullHeart;
     public Sprite emptyHeart;
+
+    public GameObject gameOverPanel; 
+    public Button retryButton; 
 
     void Start()
     {
@@ -28,6 +32,9 @@ public class Control : Sounds
         rb.gravityScale = 2f;
         animator = GetComponent<Animator>();
         explosion = Resources.Load("Explosion");
+
+        gameOverPanel.SetActive(false); 
+        retryButton.onClick.AddListener(RestartLevel); 
     }
 
     void Update()
@@ -53,12 +60,12 @@ public class Control : Sounds
 
         if (moveInput != 0 && onGround)
         {
-            footstepTimer -= Time.deltaTime; 
+            footstepTimer -= Time.deltaTime;
 
             if (footstepTimer <= 0f)
             {
-                PlaySound(sounds[1]); 
-                footstepTimer = footstepInterval; 
+                PlaySound(sounds[1]);
+                footstepTimer = footstepInterval;
             }
         }
 
@@ -90,7 +97,7 @@ public class Control : Sounds
             if (health <= 0)
             {
                 PlaySound(sounds[3]);
-                SceneManager.LoadScene(0);
+                ShowGameOverPanel();
             }
 
             UpdateHealthUI();
@@ -122,4 +129,15 @@ public class Control : Sounds
         }
     }
 
+    void ShowGameOverPanel()
+    {
+        gameOverPanel.SetActive(true); 
+        Time.timeScale = 0f; 
+    }
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }
